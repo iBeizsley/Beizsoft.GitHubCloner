@@ -37,7 +37,7 @@ namespace Beizsoft.GitHubCloner
             var configuration = new Configuration();
             try
             {
-                new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().Bind(configuration);
+                new ConfigurationBuilder().AddJsonFile(args.Length == 2 ? args[1] : "appsettings.json").Build().Bind(configuration);
                 if (string.IsNullOrWhiteSpace(configuration.ApiKey))
                 {
                     throw new ArgumentException($"No {nameof(configuration.ApiKey)} specified.", nameof(configuration.ApiKey));
