@@ -72,9 +72,24 @@ namespace Beizsoft.GitHubCloner
                     repositoryList.Where(r => r.Owner.Login == configuration.User).ToArray() :
                     repositoryList.Where(r => r.Owner.Login == configuration.GetRepositortiesForOrganization).ToArray();
 
-                if (!configuration.IncludeArchived)
+                switch (configuration.Archived)
                 {
-                    repositoryList = repositoryList.Where(r => !r.Archived).ToArray();
+                    case Configuration.ArchiveState.NoArchivedRepositories:
+                        repositoryList = repositoryList.Where(r => !r.Archived).ToArray();
+                        break;
+                    case Configuration.ArchiveState.OnlyArchivedRepositories:
+                        repositoryList = repositoryList.Where(r => r.Archived).ToArray();
+                        break;
+                }
+
+                switch (configuration.Forked)
+                {
+                    case Configuration.ForkState.NoForkedRepositories:
+                        repositoryList = repositoryList.Where(r => !r.Fork).ToArray();
+                        break;
+                    case Configuration.ForkState.OnlyForkedRepositories:
+                        repositoryList = repositoryList.Where(r => r.Fork).ToArray();
+                        break;
                 }
 
                 repositories = repositoryList.ToDictionary(r => r.FullName, r => r.CloneUrl);
@@ -161,9 +176,25 @@ namespace Beizsoft.GitHubCloner
 
         private sealed class Configuration
         {
+            public enum ForkState
+            {
+                All,
+                NoForkedRepositories,
+                OnlyForkedRepositories,
+            }
+
+            public enum ArchiveState
+            {
+                All,
+                NoArchivedRepositories,
+                OnlyArchivedRepositories,
+            }
+
             public string GetRepositortiesForOrganization { get; set; }
 
-            public bool IncludeArchived { get; set; }
+            public ArchiveState Archived { get; set; }
+
+            public ForkState Forked { get; set; }
 
             public string ApiKey { get; set; }
 
